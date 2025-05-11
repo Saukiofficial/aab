@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budgeting Pernikahan</title>
+    <style>
+        :root {
+            --primary-color: #f8c8dc;
+            --secondary-color: #f8e8ee;
+            --accent-color: #e75480;
+            --dark-color: #333;
+            --light-color: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--accent-color);
+            color: var(--light-color);
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #d63e6d;
+        }
+        
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        thead {
+            background-color: var(--primary-color);
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .action-btn {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .tab {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            background-color: #ddd;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 10px 20px;
+            flex: 1;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        
+        .tab-btn:hover {
+            background-color: #ccc;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .summary-card {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .summary-item {
+            flex: 1;
+            background-color: var(--light-color);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 0 10px;
+            box-shadow: var(--shadow);
+        }
+        
+        .summary-item h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .summary-item p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-controls select, .filter-controls input {
+            flex: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-card {
+                flex-direction: column;
+            }
+            
+            .summary-item {
+                margin: 10px 0;
+            }
+            
+            .filter-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Budgeting Pernikahan</h1>
+            <p>Catat dan kelola anggaran pernikahan Anda dengan mudah</p>
+        </header>
+        
+        <div class="summary-card">
+            <div class="summary-item">
+                <h3>Total Tabungan</h3>
+                <p id="total-savings">Rp 0</p>
+            </div>
+            <div class="summary-item">
+                <h3>Total Target Seserahan</h3>
+                <p id="total-seserahan-target">Rp 0</p>
+            </div>
+            <div class="summary-item">
+                <h3>Total Target Kebutuhan</h3>
+                <p id="total-kebutuhan-target">Rp 0</p>
+            </div>
+        </div>
+        
+        <div class="tab">
+            <button class="tab-btn active" onclick="openTab('tabungan')">Tabungan</button>
+            <button class="tab-btn" onclick="openTab('seserahan')">Seserahan</button>
+            <button class="tab-btn" onclick="openTab('kebutuhan')">Kebutuhan</button>
+        </div>
+        
+        <!-- Tabungan Section -->
+        <div id="tabungan" class="tab-content active">
+            <div class="card">
+                <h2>Tabungan Harian</h2>
+                
+                <form id="savings-form">
+                    <div class="form-group">
+                        <label for="savings-date">Tanggal:</label>
+                        <input type="date" id="savings-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-amount">Jumlah (Rp):</label>
+                        <input type="number" id="savings-amount" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="savings-note">Catatan (opsional):</label>
+                        <input type="text" id="savings-note">
+                    </div>
+                    <button type="submit">Tambah Tabungan</button>
+                </form>
+                
+                <div class="filter-controls">
+                    <input type="date" id="filter-start-date" onchange="filterSavingsEntries()">
+                    <input type="date" id="filter-end-date" onchange="filterSavingsEntries()">
+                    <button onclick="resetSavingsFilter()">Reset Filter</button>
+                </div>
+                
+                <table id="savings-table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal</th>
+                            <th>Jumlah</th>
+                            <th>Catatan</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savings-entries">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td>Total Tabungan</td>
+                            <td id="savings-total">Rp 0</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Seserahan Section -->
+        <div id="seserahan" class="tab-content">
+            <div class="card">
+                <h2>List Seserahan</h2>
+                
+                <form id="seserahan-form">
+                    <div class="form-group">
+                        <label for="seserahan-name">Nama Item:</label>
+                        <input type="text" id="seserahan-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seserahan-target">Target Biaya (Rp):</label>
+                        <input type="number" id="seserahan-target" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="seserahan-actual">Biaya Aktual (Rp):</label>
+                        <input type="number" id="seserahan-actual" min="0" value="0">
+                    </div>
+                    <button type="submit">Tambah Item</button>
+                </form>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Item</th>
+                            <th>Target Biaya</th>
+                            <th>Biaya Aktual</th>
+                            <th>Progress</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="seserahan-entries">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td>Total</td>
+                            <td id="seserahan-target-total">Rp 0</td>
+                            <td id="seserahan-actual-total">Rp 0</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Kebutuhan Section -->
+        <div id="kebutuhan" class="tab-content">
+            <div class="card">
+                <h2>List Kebutuhan</h2>
+                
+                <form id="kebutuhan-form">
+                    <div class="form-group">
+                        <label for="kebutuhan-name">Nama Item:</label>
+                        <input type="text" id="kebutuhan-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kebutuhan-target">Target Biaya (Rp):</label>
+                        <input type="number" id="kebutuhan-target" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="kebutuhan-actual">Biaya Aktual (Rp):</label>
+                        <input type="number" id="kebutuhan-actual" min="0" value="0">
+                    </div>
+                    <button type="submit">Tambah Item</button>
+                </form>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nama Item</th>
+                            <th>Target Biaya</th>
+                            <th>Biaya Aktual</th>
+                            <th>Progress</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="kebutuhan-entries">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td>Total</td>
+                            <td id="kebutuhan-target-total">Rp 0</td>
+                            <td id="kebutuhan-actual-total">Rp 0</td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data structure
+        let data = {
+            savings: [],
+            seserahan: [
+                { name: "Perhiasan", target: 0, actual: 0 },
+                { name: "Pakaian", target: 0, actual: 0 },
+                { name: "Skincare", target: 0, actual: 0 },
+                { name: "Bodycare", target: 0, actual: 0 },
+                { name: "Alat Ibadah", target: 0, actual: 0 },
+                { name: "Perlengkapan Mandi", target: 0, actual: 0 },
+                { name: "Aksesoris", target: 0, actual: 0 },
+                { name: "Pakaian Dalam", target: 0, actual: 0 }
+            ],
+            kebutuhan: [
+                { name: "Prewedding", target: 0, actual: 0 },
+                { name: "Dekor", target: 0, actual: 0 },
+                { name: "Terop", target: 0, actual: 0 },
+                { name: "Sound System", target: 0, actual: 0 },
+                { name: "Fotografi", target: 0, actual: 0 },
+                { name: "MUA", target: 0, actual: 0 },
+                { name: "Catering", target: 0, actual: 0 }
+            ]
+        };
+        
+        // Load data from localStorage if available
+        function loadData() {
+            const savedData = localStorage.getItem('weddingBudgetData');
+            if (savedData) {
+                data = JSON.parse(savedData);
+            }
+            renderAllData();
+        }
+        
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('weddingBudgetData', JSON.stringify(data));
+            renderAllData();
+        }
+        
+        // Format currency
+        function formatCurrency(amount) {
+            return 'Rp ' + parseFloat(amount).toLocaleString('id-ID');
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        
+        // Tab functionality
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and mark the button as active
+            document.getElementById(tabName).classList.add('active');
+            document.querySelector(`.tab-btn[onclick="openTab('${tabName}')"]`).classList.add('active');
+        }
+        
+        // Render savings data
+        function renderSavings() {
+            const tbody = document.getElementById('savings-entries');
+            const totalSavingsElement = document.getElementById('savings-total');
+            const summaryTotalSavings = document.getElementById('total-savings');
+            
+            tbody.innerHTML = '';
+            let total = 0;
+            
+            // Sort by date (newest first)
+            const sortedSavings = [...data.savings].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedSavings.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${formatCurrency(entry.amount)}</td>
+                    <td>${entry.note || '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="deleteSavingsEntry(${index})">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                total += parseFloat(entry.amount);
+            });
+            
+            totalSavingsElement.textContent = formatCurrency(total);
+            summaryTotalSavings.textContent = formatCurrency(total);
+        }
+        
+        // Filter savings entries
+        function filterSavingsEntries() {
+            const startDate = document.getElementById('filter-start-date').value;
+            const endDate = document.getElementById('filter-end-date').value;
+            
+            const tbody = document.getElementById('savings-entries');
+            const totalSavingsElement = document.getElementById('savings-total');
+            
+            tbody.innerHTML = '';
+            let total = 0;
+            
+            // Sort by date (newest first)
+            const sortedSavings = [...data.savings].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedSavings.forEach((entry, index) => {
+                // Apply date filter if set
+                if ((startDate && entry.date < startDate) || (endDate && entry.date > endDate)) {
+                    return;
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(entry.date)}</td>
+                    <td>${formatCurrency(entry.amount)}</td>
+                    <td>${entry.note || '-'}</td>
+                    <td>
+                        <button class="action-btn" onclick="deleteSavingsEntry(${index})">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                total += parseFloat(entry.amount);
+            });
+            
+            totalSavingsElement.textContent = formatCurrency(total);
+        }
+        
+        // Reset savings filter
+        function resetSavingsFilter() {
+            document.getElementById('filter-start-date').value = '';
+            document.getElementById('filter-end-date').value = '';
+            renderSavings();
+        }
+        
+        // Delete savings entry
+        function deleteSavingsEntry(index) {
+            if (confirm('Yakin ingin menghapus entri tabungan ini?')) {
+                data.savings.splice(index, 1);
+                saveData();
+            }
+        }
+        
+        // Render list items (for both seserahan and kebutuhan)
+        function renderListItems(type) {
+            const tbody = document.getElementById(type + '-entries');
+            const targetTotalElement = document.getElementById(type + '-target-total');
+            const actualTotalElement = document.getElementById(type + '-actual-total');
+            const summaryTotalTarget = document.getElementById('total-' + type + '-target');
+            
+            tbody.innerHTML = '';
+            let targetTotal = 0;
+            let actualTotal = 0;
+            
+            data[type].forEach((item, index) => {
+                const row = document.createElement('tr');
+                
+                const progress = item.target > 0 ? (item.actual / item.target) * 100 : 0;
+                const progressBar = `
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${Math.min(100, progress)}%"></div>
+                    </div>
+                    ${progress.toFixed(0)}%
+                `;
+                
+                row.innerHTML = `
+                    <td>${item.name}</td>
+                    <td>${formatCurrency(item.target)}</td>
+                    <td>${formatCurrency(item.actual)}</td>
+                    <td>${progressBar}</td>
+                    <td>
+                        <button class="action-btn" onclick="editListItem('${type}', ${index})">Edit</button>
+                        <button class="action-btn" onclick="deleteListItem('${type}', ${index})">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+                
+                targetTotal += parseFloat(item.target);
+                actualTotal += parseFloat(item.actual);
+            });
+            
+            targetTotalElement.textContent = formatCurrency(targetTotal);
+            actualTotalElement.textContent = formatCurrency(actualTotal);
+            summaryTotalTarget.textContent = formatCurrency(targetTotal);
+        }
+        
+        // Edit list item (seserahan or kebutuhan)
+        function editListItem(type, index) {
+            const item = data[type][index];
+            
+            const newName = prompt('Nama item:', item.name);
+            if (!newName) return;
+            
+            const newTarget = prompt('Target biaya (Rp):', item.target);
+            if (newTarget === null) return;
+            
+            const newActual = prompt('Biaya aktual (Rp):', item.actual);
+            if (newActual === null) return;
+            
+            data[type][index] = {
+                name: newName,
+                target: parseFloat(newTarget) || 0,
+                actual: parseFloat(newActual) || 0
+            };
+            
+            saveData();
+        }
+        
+        // Delete list item (seserahan or kebutuhan)
+        function deleteListItem(type, index) {
+            if (confirm('Yakin ingin menghapus item ini?')) {
+                data[type].splice(index, 1);
+                saveData();
+            }
+        }
+        
+        // Render all data
+        function renderAllData() {
+            renderSavings();
+            renderListItems('seserahan');
+            renderListItems('kebutuhan');
+        }
+        
+        // Event listeners for forms
+        document.getElementById('savings-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const date = document.getElementById('savings-date').value;
+            const amount = document.getElementById('savings-amount').value;
+            const note = document.getElementById('savings-note').value;
+            
+            if (!date || !amount) {
+                alert('Mohon isi tanggal dan jumlah tabungan!');
+                return;
+            }
+            
+            data.savings.push({
+                date: date,
+                amount: parseFloat(amount),
+                note: note
+            });
+            
+            // Reset form
+            this.reset();
+            document.getElementById('savings-date').valueAsDate = new Date();
+            
+            saveData();
+        });
+        
+        document.getElementById('seserahan-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('seserahan-name').value;
+            const target = document.getElementById('seserahan-target').value;
+            const actual = document.getElementById('seserahan-actual').value;
+            
+            if (!name || !target) {
+                alert('Mohon isi nama item dan target biaya!');
+                return;
+            }
+            
+            data.seserahan.push({
+                name: name,
+                target: parseFloat(target),
+                actual: parseFloat(actual) || 0
+            });
+            
+            // Reset form
+            this.reset();
+            
+            saveData();
+        });
+        
+        document.getElementById('kebutuhan-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('kebutuhan-name').value;
+            const target = document.getElementById('kebutuhan-target').value;
+            const actual = document.getElementById('kebutuhan-actual').value;
+            
+            if (!name || !target) {
+                alert('Mohon isi nama item dan target biaya!');
+                return;
+            }
+            
+            data.kebutuhan.push({
+                name: name,
+                target: parseFloat(target),
+                actual: parseFloat(actual) || 0
+            });
+            
+            // Reset form
+            this.reset();
+            
+            saveData();
+        });
+        
+        // Set today's date as default for savings date input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('savings-date').valueAsDate = new Date();
+            loadData();
+        });
+    </script>
+</body>
+</html>
